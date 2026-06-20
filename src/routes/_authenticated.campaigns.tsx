@@ -243,10 +243,11 @@ function CampaignBuilder() {
                 className="font-mono text-sm"
               />
               {draft.mode === "personalized" && (
-                <p className="text-xs text-muted-foreground">
-                  Variables: <Badge variant="outline" className="ml-1">{"{name}"}</Badge>{" "}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>Variables:</span>
+                  <Badge variant="outline">{"{name}"}</Badge>
                   <Badge variant="outline">{"{number}"}</Badge>
-                </p>
+                </div>
               )}
             </div>
 

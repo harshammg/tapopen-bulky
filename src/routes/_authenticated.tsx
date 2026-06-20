@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Topbar } from "@/components/topbar";
 import { motion } from "framer-motion";
@@ -12,18 +12,15 @@ export const Route = createFileRoute("/_authenticated")({
 function Layout() {
   const authed = useStore((s) => s.authedEmail);
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!authed) navigate({ to: "/login" });
-  }, [authed, navigate]);
+    setMounted(true);
+  }, []);
 
-  if (!authed) {
-    return (
-      <div className="grid min-h-screen place-items-center">
-        <p className="text-muted-foreground">Redirecting…</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (mounted && !authed) navigate({ to: "/login" });
+  }, [mounted, authed, navigate]);
 
   return (
     <div className="flex min-h-screen w-full">
@@ -36,7 +33,11 @@ function Layout() {
           transition={{ duration: 0.25 }}
           className="flex-1 p-6 md:p-8"
         >
-          <Outlet />
+          {mounted && !authed ? (
+            <p className="text-muted-foreground">Redirecting…</p>
+          ) : (
+            <Outlet />
+          )}
         </motion.main>
       </div>
     </div>

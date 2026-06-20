@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, QrCode, Users, MessageSquare, Clock, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/how-it-works")({
-  head: () => ({ meta: [{ title: "How it works — WA Campaign Manager" }] }),
+  head: () => ({ meta: [{ title: "How it works - bulky by tapopen" }] }),
   component: HowItWorks,
 });
 

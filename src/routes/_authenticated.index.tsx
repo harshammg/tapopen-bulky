@@ -35,8 +35,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 export const Route = createFileRoute("/_authenticated/")({
-  head: () => ({ meta: [{ title: "Bulk Messaging — WA Campaign Manager" }] }),
+  head: () => ({ meta: [{ title: "Bulk Messaging - bulky by tapopen" }] }),
   component: CampaignBuilder,
 });
 
@@ -171,7 +178,7 @@ function CampaignBuilder() {
         />
       </div>
 
-      {/* Section 1 — Contacts */}
+      {/* Section 1 - Contacts */}
       <Card className="glass">
         <CardHeader>
           <CardTitle className="font-display">1. Contacts</CardTitle>
@@ -249,7 +256,7 @@ function CampaignBuilder() {
         </CardContent>
       </Card>
 
-      {/* Section 2 — Message builder */}
+      {/* Section 2 - Message builder */}
       <Card className="glass">
         <CardHeader><CardTitle className="font-display">2. Message</CardTitle></CardHeader>
         <CardContent className="space-y-5">
@@ -303,7 +310,7 @@ function CampaignBuilder() {
         </CardContent>
       </Card>
 
-      {/* Section 3 — Batch & delay */}
+      {/* Section 3 - Batch & delay */}
       <Card className="glass">
         <CardHeader><CardTitle className="font-display">3. Batch & delay</CardTitle></CardHeader>
         <CardContent className="grid gap-6 lg:grid-cols-2">
@@ -326,7 +333,7 @@ function CampaignBuilder() {
         </CardContent>
       </Card>
 
-      {/* Section 4 — Controls */}
+      {/* Section 4 - Controls */}
       <Card className="glass">
         <CardHeader><CardTitle className="font-display">4. Sending controls</CardTitle></CardHeader>
         <CardContent className="space-y-6">
@@ -378,12 +385,20 @@ function CampaignBuilder() {
               </Button>
             </div>
             
-            {qrUrl && !connected && (
-              <div className="p-4 bg-white rounded-xl inline-block shadow w-fit border border-border">
-                 <p className="text-black text-sm mb-2 font-bold text-center">Scan QR Code</p>
-                 <img src={qrUrl} alt="WhatsApp QR Code" className="w-48 h-48 mx-auto" />
-              </div>
-            )}
+            <Dialog open={!!qrUrl && !connected} onOpenChange={(open) => { if (!open) actions.setQrUrl(null); }}>
+              <DialogContent className="sm:max-w-md flex flex-col items-center">
+                <DialogHeader>
+                  <DialogTitle className="text-center">Scan QR Code</DialogTitle>
+                  <DialogDescription className="text-center">
+                    Open WhatsApp on your phone and link a device. <br />
+                    <span className="font-semibold text-accent mt-2 inline-block">Please do not close this popup until the login is successful.</span>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="p-4 bg-white rounded-xl shadow border border-border inline-block">
+                   <img src={qrUrl || ""} alt="WhatsApp QR Code" className="w-64 h-64 mx-auto" />
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <ProgressPanel pct={pct} />

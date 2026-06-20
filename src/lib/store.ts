@@ -1,5 +1,5 @@
 // Lightweight reactive store backed by localStorage. Frontend-only mock for
-// the WA Campaign Manager (no real WhatsApp connectivity).
+// the bulky by tapopen (no real WhatsApp connectivity).
 import { useSyncExternalStore } from "react";
 
 export type Contact = {

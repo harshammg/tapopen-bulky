@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_authenticated/recent-campaigns")({
-  head: () => ({ meta: [{ title: "Recent Campaigns — WA Campaign Manager" }] }),
+  head: () => ({ meta: [{ title: "Recent Campaigns - bulky by tapopen" }] }),
   component: RecentCampaigns,
 });
 

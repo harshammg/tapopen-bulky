@@ -129,7 +129,7 @@ export async function startCampaign() {
       failed,
       durationSec,
     });
-    actions.log({ message: `Campaign finished — ${sent}/${total} sent`, type: "info" });
+    actions.log({ message: `Campaign finished - ${sent}/${total} sent`, type: "info" });
   } else {
     actions.log({ message: `Campaign stopped`, type: "info" });
   }

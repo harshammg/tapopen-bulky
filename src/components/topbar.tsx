@@ -1,4 +1,4 @@
-import { RefreshCw, Menu, Send, History, HelpCircle } from "lucide-react";
+import { RefreshCw, Menu, Send, History, HelpCircle, Github } from "lucide-react";
 import { motion } from "framer-motion";
 import { useStore } from "@/lib/store";
 import { socket } from "@/lib/socket";
@@ -72,6 +72,11 @@ export function Topbar() {
         >
           <RefreshCw className="h-4 w-4" />
         </Button>
+        <a href="https://github.com/harshammg/tapopen-bulky" target="_blank" rel="noopener noreferrer">
+          <Button variant="ghost" size="icon" title="View on GitHub">
+            <Github className="h-5 w-5" />
+          </Button>
+        </a>
       </div>
     </header>
   );

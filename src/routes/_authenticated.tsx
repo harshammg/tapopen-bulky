@@ -1,27 +1,36 @@
-import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Topbar } from "@/components/topbar";
 import { motion } from "framer-motion";
-import { getState } from "@/lib/store";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: ({ location }) => {
-    if (typeof window === "undefined") return;
-    if (!getState().authedEmail) {
-      throw redirect({ to: "/login", search: { redirect: location.href } });
-    }
-  },
   component: Layout,
 });
 
 function Layout() {
+  const authed = useStore((s) => s.authedEmail);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authed) navigate({ to: "/login" });
+  }, [authed, navigate]);
+
+  if (!authed) {
+    return (
+      <div className="grid min-h-screen place-items-center">
+        <p className="text-muted-foreground">Redirecting…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen w-full">
       <AppSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
         <motion.main
-          key={typeof window !== "undefined" ? window.location.pathname : ""}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}

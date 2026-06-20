@@ -48,7 +48,9 @@ export type Settings = {
 
 export type AppState = {
   authedEmail: string | null;
-  connected: boolean;
+  connected: boolean; // True when whatsapp client is authenticated
+  qrUrl: string | null;
+  socketConnected: boolean;
   draft: CampaignDraft;
   history: Campaign[];
   templates: { id: string; name: string; body: string; mode: MessageMode }[];
@@ -86,6 +88,8 @@ const STORAGE_KEY = "wa-campaign-manager:v1";
 const initialState: AppState = {
   authedEmail: null,
   connected: false,
+  qrUrl: null,
+  socketConnected: false,
   draft: defaultDraft(defaultSettings),
   history: [],
   templates: [
@@ -158,6 +162,15 @@ export const actions = {
   logout() {
     setState((s) => ({ ...s, authedEmail: null }));
   },
+  setConnected(connected: boolean) {
+    setState((s) => ({ ...s, connected }));
+  },
+  setQrUrl(qrUrl: string | null) {
+    setState((s) => ({ ...s, qrUrl }));
+  },
+  setSocketConnected(socketConnected: boolean) {
+    setState((s) => ({ ...s, socketConnected }));
+  },
   toggleConnected() {
     setState((s) => ({ ...s, connected: !s.connected }));
   },
@@ -209,6 +222,9 @@ export const actions = {
   },
   deleteHistory(id: string) {
     setState((s) => ({ ...s, history: s.history.filter((h) => h.id !== id) }));
+  },
+  clearHistory() {
+    setState((s) => ({ ...s, history: [] }));
   },
   setRunning(running: boolean, paused = false) {
     setState((s) => ({ ...s, running, paused }));

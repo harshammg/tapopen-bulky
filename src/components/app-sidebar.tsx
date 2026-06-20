@@ -1,37 +1,26 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard,
   Send,
-  Users,
-  FileText,
-  History,
-  Settings as SettingsIcon,
   MessageCircle,
+  HelpCircle,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Campaigns", url: "/campaigns", icon: Send },
-  { title: "Contacts", url: "/contacts", icon: Users },
-  { title: "Templates", url: "/templates", icon: FileText },
-  { title: "History", url: "/history", icon: History },
-  { title: "Settings", url: "/settings", icon: SettingsIcon },
+  { title: "Bulk Messaging", url: "/", icon: Send },
+  { title: "Recent Campaigns", url: "/recent-campaigns", icon: History },
+  { title: "How it works", url: "/how-it-works", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   return (
     <aside className="glass sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-2 border-r border-border/40 p-5 md:flex">
-      <Link to="/" className="mb-6 flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-glow)]">
-          <MessageCircle className="h-5 w-5" />
-        </div>
-        <div>
-          <p className="font-display text-lg font-bold leading-none">WA Manager</p>
-          <p className="text-xs text-muted-foreground">Personal outreach</p>
-        </div>
+      <Link to="/" className="mb-6 block">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-primary">bulky</h1>
+        <p className="text-xs font-semibold text-muted-foreground mt-1">by tapopen</p>
       </Link>
 
       <nav className="flex flex-col gap-1">

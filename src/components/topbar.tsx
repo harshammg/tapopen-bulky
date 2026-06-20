@@ -1,29 +1,47 @@
-import { Bell, LogOut } from "lucide-react";
+import { RefreshCw, Menu, Send, History, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { actions, useStore } from "@/lib/store";
-import { useNavigate } from "@tanstack/react-router";
+import { useStore } from "@/lib/store";
+import { socket } from "@/lib/socket";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 export function Topbar() {
-  const email = useStore((s) => s.authedEmail);
   const connected = useStore((s) => s.connected);
   const running = useStore((s) => s.running);
-  const navigate = useNavigate();
 
-  const initial = (email ?? "U").slice(0, 1).toUpperCase();
+  const pathname = useRouterState({ select: (r) => r.location.pathname });
 
   return (
-    <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 px-6">
+    <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 px-4 md:px-6">
       <div className="flex items-center gap-3">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-5 glass">
+            <div className="flex flex-col h-full">
+              <div className="mb-8">
+                <h1 className="font-display text-2xl font-bold tracking-tight text-primary">bulky</h1>
+                <p className="text-xs font-semibold text-muted-foreground mt-1">by tapopen</p>
+              </div>
+              <nav className="flex flex-col gap-2">
+                <Link to="/" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${pathname === "/" ? "bg-primary/15 text-foreground" : "text-muted-foreground"}`}>
+                  <Send className="h-4 w-4" /> Bulk Messaging
+                </Link>
+                <Link to="/recent-campaigns" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${pathname.startsWith("/recent-campaigns") ? "bg-primary/15 text-foreground" : "text-muted-foreground"}`}>
+                  <History className="h-4 w-4" /> Recent Campaigns
+                </Link>
+                <Link to="/how-it-works" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${pathname.startsWith("/how-it-works") ? "bg-primary/15 text-foreground" : "text-muted-foreground"}`}>
+                  <HelpCircle className="h-4 w-4" /> How it works
+                </Link>
+              </nav>
+            </div>
+          </SheetContent>
+        </Sheet>
         <motion.span
           animate={{ scale: connected ? [1, 1.15, 1] : 1 }}
           transition={{ repeat: connected ? Infinity : 0, duration: 2 }}
@@ -39,34 +57,21 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-accent" />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          title="Refresh WhatsApp Session"
+          onClick={() => {
+            if (connected) {
+              socket.emit("refresh_session");
+              toast.info("Refreshing WhatsApp session...");
+            } else {
+              toast.error("Not connected to WhatsApp");
+            }
+          }}
+        >
+          <RefreshCw className="h-4 w-4" />
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-full p-1 pr-3 hover:bg-white/5">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                  {initial}
-                </AvatarFallback>
-              </Avatar>
-              <span className="hidden text-sm sm:inline">{email ?? "Guest"}</span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>{email ?? "Signed out"}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                actions.logout();
-                navigate({ to: "/login" });
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" /> Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </header>
   );

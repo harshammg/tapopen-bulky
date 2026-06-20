@@ -2,18 +2,19 @@
 // random delays, updating progress + logs on the store. Replace with real
 // REST/WebSocket integration when a backend is available.
 import { actions, getState, randInt, renderTemplate, type Contact } from "./store";
+import { socket } from "./socket";
 
 let cancelled = false;
 let pauseRef = { paused: false };
-let activeTimers: ReturnType<typeof setTimeout>[] = [];
+let activeTimers: { id: ReturnType<typeof setTimeout>; resolve: () => void }[] = [];
 
 function sleep(ms: number) {
   return new Promise<void>((resolve) => {
-    const t = setTimeout(() => {
-      activeTimers = activeTimers.filter((x) => x !== t);
+    const id = setTimeout(() => {
+      activeTimers = activeTimers.filter((x) => x.id !== id);
       resolve();
     }, ms);
-    activeTimers.push(t);
+    activeTimers.push({ id, resolve });
   });
 }
 
@@ -59,11 +60,45 @@ export async function startCampaign() {
       actions.updateContactStatus(contact.id, "sending");
       actions.log({ message: `Sending to ${contact.name}`, type: "sending" });
 
-      // simulate send latency
+      // simulate human pacing
       await sleep(randInt(400, 900));
 
-      // mock: 95% success
-      const success = Math.random() > 0.05;
+      const message = draft.mode === "personalized" ? renderTemplate(draft.personalizedTemplate, contact) : draft.commonTemplate;
+
+      const success = await new Promise<boolean>((resolve) => {
+        let timeout: ReturnType<typeof setTimeout>;
+
+        const cleanup = () => {
+          clearTimeout(timeout);
+          socket.off("message_sent", onSent);
+          socket.off("message_failed", onFailed);
+        };
+
+        const onSent = (data: { contactId: string }) => {
+          if (data.contactId === contact.id) {
+            cleanup();
+            resolve(true);
+          }
+        };
+
+        const onFailed = (data: { contactId: string, error: string }) => {
+          if (data.contactId === contact.id) {
+            cleanup();
+            resolve(false);
+          }
+        };
+
+        timeout = setTimeout(() => {
+          cleanup();
+          actions.log({ message: `Timeout waiting for response from ${contact.name}`, type: "failed" });
+          resolve(false);
+        }, 30000);
+
+        socket.on("message_sent", onSent);
+        socket.on("message_failed", onFailed);
+        socket.emit("send_message", { phone: contact.phone, message, contactId: contact.id });
+      });
+
       if (success) {
         actions.updateContactStatus(contact.id, "sent");
         sent += 1;
@@ -116,8 +151,14 @@ export function resumeCampaign() {
 export function stopCampaign() {
   cancelled = true;
   pauseRef.paused = false;
-  activeTimers.forEach((t) => clearTimeout(t));
+  activeTimers.forEach((t) => {
+    clearTimeout(t.id);
+    t.resolve(); // Unblock pending sleep promises
+  });
   activeTimers = [];
+  
+  // Immediately update UI to feel responsive
+  actions.setRunning(false);
 }
 
 export function previewMessage(tpl: string, sample: Contact) {

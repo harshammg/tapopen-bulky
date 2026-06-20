@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Topbar } from "@/components/topbar";
 import { motion } from "framer-motion";
 import { useStore } from "@/lib/store";
+import { initSocket } from "@/lib/socket";
 
 export const Route = createFileRoute("/_authenticated")({
   component: Layout,
@@ -19,8 +20,8 @@ function Layout() {
   }, []);
 
   useEffect(() => {
-    if (mounted && !authed) navigate({ to: "/login" });
-  }, [mounted, authed, navigate]);
+    if (mounted) initSocket();
+  }, [mounted]);
 
   return (
     <div className="flex min-h-screen w-full">
@@ -33,11 +34,7 @@ function Layout() {
           transition={{ duration: 0.25 }}
           className="flex-1 p-6 md:p-8"
         >
-          {mounted && !authed ? (
-            <p className="text-muted-foreground">Redirecting…</p>
-          ) : (
-            <Outlet />
-          )}
+          {mounted ? <Outlet /> : <p className="text-muted-foreground">Loading…</p>}
         </motion.main>
       </div>
     </div>

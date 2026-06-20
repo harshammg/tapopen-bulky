@@ -83,13 +83,13 @@ function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard label="Total Campaigns" value={totalCampaigns} icon={Send} tint="bg-primary/20 text-primary" delay={0.0} />
-        <StatCard label="Messages Sent" value={totalSent} icon={CheckCircle2} tint="bg-success/20 text-success" delay={0.05} />
-        <StatCard label="Pending Messages" value={pending} icon={Clock} tint="bg-warning/20 text-warning" delay={0.1} />
-        <StatCard label="Failed Messages" value={totalFailed} icon={XCircle} tint="bg-destructive/20 text-destructive" delay={0.15} />
+        <StatCard label="Campaigns" value={totalCampaigns} icon={Send} tint="bg-primary/20 text-primary" delay={0.0} />
+        <StatCard label="Sent" value={totalSent} icon={CheckCircle2} tint="bg-success/20 text-success" delay={0.05} />
+        <StatCard label="Pending" value={pending} icon={Clock} tint="bg-warning/20 text-warning" delay={0.1} />
+        <StatCard label="Failed" value={totalFailed} icon={XCircle} tint="bg-destructive/20 text-destructive" delay={0.15} />
         <StatCard
           label="WhatsApp"
-          value={connected ? "Connected" : "Offline"}
+          value={connected ? "Online" : "Offline"}
           icon={Plug}
           tint={connected ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"}
           delay={0.2}
